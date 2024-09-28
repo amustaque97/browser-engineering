@@ -3,7 +3,7 @@ import ssl
 
 import tkinter
 
-
+from text_style import Text, Tag
 
 class Url:
     def __init__(self, url):
@@ -57,16 +57,23 @@ class Url:
         return content
 
 def lex(body):
-    text = ""
+    buffer = ""
+    out = []
     in_tag = False
     for c in body:
         if c == "<":
             in_tag = True
+            if buffer: out.append(Text(buffer))
+            buffer = ""
         elif c == ">":
             in_tag = False
-        elif not in_tag:
-            text += c
-    return text
+            out.append(Tag(buffer))
+            buffer = ""
+        else:
+            buffer += c
+    if not in_tag and buffer:
+        out.append(Text(buffer))
+    return out
 
 
 if __name__ == "__main__":
